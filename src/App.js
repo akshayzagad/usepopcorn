@@ -1,5 +1,5 @@
 import { useState } from "react";
-import './index.css';
+import "./index.css";
 const tempMovieData = [
   {
     imdbID: "tt1375666",
@@ -52,26 +52,48 @@ const average = (arr) =>
 
 export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
+  const [watched, setWatched] = useState(tempWatchedData);
   return (
     <>
-      <Nav movies={movies} />
+      <Nav movies={movies}>
+        <Logo />
+        <Search />
+        <Result movies={movies} />
+      </Nav>
       <main className="main">
-        <ListBox movies={movies}/>
-        <WatchBox/>
+
+        {/**
+         Alternative to children prop in whih we pass element as a props
+       */}
+
+        {/* <Box element={<MovieList movies={movies} />} />
+        <Box
+          element={
+            <>
+              <WatchBoxSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          }
+        /> */}
+
+        {/**
+         children prop drilling and create reusable component @{Box} which is smae for watchlist and movielist
+       */}
+       
+        <Box>
+          <MovieList movies={movies} />
+        </Box>
+        <Box>
+          <WatchBoxSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </Box>
       </main>
     </>
   );
 }
 
-function Nav({movies}) {
-
-  return (
-    <nav className="nav-bar">
-      <Logo />
-      <Search />
-      <Result movies={movies}/>
-    </nav>
-  )
+function Nav({ children }) {
+  return <nav className="nav-bar">{children}</nav>;
 }
 
 function Logo() {
@@ -80,7 +102,7 @@ function Logo() {
       <span role="img">🍿</span>
       <h1>usePopcorn</h1>
     </div>
-  )
+  );
 }
 
 function Search() {
@@ -93,19 +115,18 @@ function Search() {
       value={query}
       onChange={(e) => setQuery(e.target.value)}
     />
-  )
+  );
 }
 
-function Result({movies}) {
+function Result({ movies }) {
   return (
     <p className="num-results">
       Found <strong>{movies.length}</strong> results
     </p>
-  )
+  );
 }
 
-
-function ListBox({movies}) {
+function Box({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -115,28 +136,47 @@ function ListBox({movies}) {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && <MovieList  movies={movies}/>}
+      {isOpen1 && children}
     </div>
-  )
+  );
 }
 
-function MovieList({movies}) {
-  
+/*function WatchBox() {
+  const [watched, setWatched] = useState(tempWatchedData);
+
+  const [isOpen2, setIsOpen2] = useState(true);
+
   return (
-    (
-      <ul className="list">
-        {movies?.map((movie) => (
-          <Movie movie={movie} key={movie.imdbID} />
-        ))}
-      </ul>
-    )
-  )
+    <div className="box">
+      <button
+        className="btn-toggle"
+        onClick={() => setIsOpen2((open) => !open)}
+      >
+        {isOpen2 ? "–" : "+"}
+      </button>
+      {isOpen2 && (
+        <>
+          <WatchBoxSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </>
+      )}
+    </div>
+  );
+}*/
+
+function MovieList({ movies }) {
+  return (
+    <ul className="list">
+      {movies?.map((movie) => (
+        <Movie movie={movie} key={movie.imdbID} />
+      ))}
+    </ul>
+  );
 }
 
 function Movie({ movie }) {
-
   return (
-    <li >
+    <li>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -146,32 +186,7 @@ function Movie({ movie }) {
         </p>
       </div>
     </li>
-  )
-}
-
-function WatchBox() {
-  const [watched, setWatched] = useState(tempWatchedData);
-
-  const [isOpen2, setIsOpen2] = useState(true);
-
-
-  return (
-    <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen2((open) => !open)}
-      >
-        {isOpen2 ? "–" : "+"}
-
-      </button>
-      {isOpen2 && (
-        <>
-          <WatchBoxSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
-        </>
-      )}
-    </div>
-  )
+  );
 }
 
 function WatchBoxSummary({ watched }) {
@@ -200,7 +215,7 @@ function WatchBoxSummary({ watched }) {
         </p>
       </div>
     </div>
-  )
+  );
 }
 
 function WatchedMoviesList({ watched }) {
@@ -210,12 +225,12 @@ function WatchedMoviesList({ watched }) {
         <WatchMovie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
-  )
+  );
 }
 
 function WatchMovie({ movie }) {
   return (
-    <li >
+    <li>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -233,5 +248,5 @@ function WatchMovie({ movie }) {
         </p>
       </div>
     </li>
-  )
+  );
 }
