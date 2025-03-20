@@ -117,6 +117,7 @@ export default function App() {
         setRandomError("");
         return;
       }
+      handleCloseMovie();
       fetchMovie();
       return function(){
         controller.abort();
@@ -368,6 +369,20 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
     },
     [title]
   );
+
+  useEffect(function(){
+    function callBack(e){
+      if(e.code === 'Escape'){
+        handleCloseMovie();
+        console.log("Close Movie");
+      }
+    }
+    document.addEventListener('keydown',callBack);
+    return function(){
+      document.removeEventListener('keydown',callBack);
+    };
+  },[handleCloseMovie]);
+
   return (
     <>
       {isLoading ? (
@@ -398,7 +413,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
               <StarRating
                 maxRating={10}
                 size={24}
-                onSetRating={setUserRating} // Correct prop name
+                onSetMovieRating={setUserRating} // Correct prop name
               />
               {userRating > 0 && (<button className="btn-add" onClick={handleAdd}>
                 add to list
