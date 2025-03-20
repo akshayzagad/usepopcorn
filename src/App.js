@@ -105,7 +105,7 @@ export default function App() {
           setMovies(data.Search);
         } catch (error) {
           console.log(error.message);
-          if (error.message !== "AbortError") {
+          if (error.message !== "signal is aborted without reason") {
           setRandomError(error.message);
           }
         } finally {
@@ -293,8 +293,9 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
-  const [movieDetails, setMovieDetails] = useState(null);
+  const [movieDetails, setMovieDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [randomError, setRandomError] = useState("");
   const [userRating, setUserRating] = useState("");
   const isWatched = watched.map((movie)=> movie.imdbID).includes(id); 
   useEffect(
@@ -323,8 +324,6 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
     [id]
   );
 
-  if (!movieDetails) return <Loader />;
-
   const {
     Title: title,
     Year: year,
@@ -336,9 +335,14 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
     Actors: actors,
     Director: director,
     Genre: genre,
-  } = movie;
+  } = movieDetails;
+
+  const watchedUserRating = watched.find(
+    (movie) => movie.imdbID === id
+  )?.userRating;
 
   function handleAdd() {
+
     const newWatchedMovie = {
       imdbID: id,
       title,
@@ -348,13 +352,24 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
       runtime: Number(runtime.split(" ").at(0)),
       userRating,
     };
-
     onAddWatchedMovie(newWatchedMovie);
     handleCloseMovie();
-  }
+  };
 
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+        // console.log(`Clean up effect for movie ${title}`);
+      };
+    },
+    [title]
+  );
   return (
-    <div className="details">
+    <>
       {isLoading ? (
         <Loader />
       ) : (
@@ -363,7 +378,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
             <button className="btn-back" onClick={handleCloseMovie}>
               &larr;
             </button>
-            <img src={poster} alt={`Poster of ${movie} movie`} />
+            <img src={poster} alt={`Poster of ${title} movie`} />
             <div className="details-overview">
               <h2>{title}</h2>
               <p>
@@ -383,7 +398,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
               <StarRating
                 maxRating={10}
                 size={24}
-                onSetMovieRating={setUserRating} // Correct prop name
+                onSetRating={setUserRating} // Correct prop name
               />
               {userRating > 0 && (<button className="btn-add" onClick={handleAdd}>
                 add to list
@@ -401,7 +416,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
           </section>
         </>
       )}
-    </div>
+    </>
   );
 }
 
