@@ -65,7 +65,7 @@ export default function App() {
   }
 
   function handleId(id) {
-    setId((selectedId) => (id == selectedId ? null : id));
+    setId((selectedId) => (id === selectedId ? null : id));
   }
 
   function handleCloseMovie(id) {
@@ -287,7 +287,7 @@ function Movie({ movie, onSelectMovie }) {
 }
 
 function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
-  const [movieDetails, setMovieDetails] = useState(null);
+  const [movieDetails, setMovieDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [randomError, setRandomError] = useState("");
   const [userRating, setUserRating] = useState("");
@@ -317,8 +317,6 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
     },
     [id]
   );
-
-  if (!movieDetails) return <Loader />;
 
   const {
     Title: title,
@@ -350,7 +348,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
     };
     onAddWatchedMovie(newWatchedMovie);
     handleCloseMovie();
-  }
+  };
 
   return (
     <>
@@ -382,7 +380,7 @@ function MovieDetails({ id, handleCloseMovie, onAddWatchedMovie,watched }) {
               <StarRating
                 maxRating={10}
                 size={24}
-                onSetMovieRating={setUserRating} // Correct prop name
+                onSetRating={setUserRating} // Correct prop name
               />
               {userRating > 0 && (<button className="btn-add" onClick={handleAdd}>
                 add to list

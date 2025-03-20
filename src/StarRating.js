@@ -17,7 +17,7 @@ export default function StarRating({
   size = 48,
   className='',
   message = [],
-  onSetMovieRating,
+  onSetRating, // Correct prop name
 }) {
   const [rating, setRating] = useState(0);
   const [temRating, setTemRating] = useState(0);
@@ -31,7 +31,7 @@ export default function StarRating({
 
   function handleRating(rating) {
     setRating(rating);
-    onSetMovieRating(rating);
+    onSetRating(rating); // Correct prop name
   }
 
   return (
